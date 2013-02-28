@@ -156,6 +156,17 @@ class ServerCommandsTestCase(RedisTestCase):
 
     @async_test
     @gen.engine
+    def test_pexpire(self):
+        res = yield gen.Task(self.client.set, 'a', 1)
+        self.assertEqual(res, True)
+        res = yield gen.Task(self.client.pexpire, 'a', 10000)
+        self.assertEqual(res, True)
+        res = yield gen.Task(self.client.ttl, 'a')
+        self.assertEqual(res, 10)
+        self.stop()
+
+    @async_test
+    @gen.engine
     def test_type(self):
         res = yield gen.Task(self.client.set, 'a', 1)
         self.assertEqual(res, True)
