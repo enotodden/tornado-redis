@@ -150,7 +150,7 @@ PUB_SUB_COMMANDS = set([
 
 REPLY_MAP = dict_merge(
     string_keys_to_dict('AUTH BGREWRITEAOF BGSAVE DEL EXISTS '
-                        'EXPIRE HDEL HEXISTS '
+                        'EXPIRE PEXPIRE HDEL HEXISTS '
                         'HMSET MOVE MSET MSETNX SAVE SETNX',
                         reply_to_bool),
     string_keys_to_dict('FLUSHALL FLUSHDB SELECT SET SETEX '
@@ -501,6 +501,9 @@ class Client(object):
 
     def expire(self, key, ttl, callback=None):
         self.execute_command('EXPIRE', key, ttl, callback=callback)
+
+    def pexpire(self, key, ttl, callback=None):
+        self.execute_command('PEXPIRE', key, ttl, callback=callback)
 
     def ttl(self, key, callback=None):
         self.execute_command('TTL', key, callback=callback)
