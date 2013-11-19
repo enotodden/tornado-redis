@@ -5,12 +5,13 @@ from collections import deque
 
 from tornado.iostream import IOStream
 
-from .exceptions import ConnectionError
+from .exceptions import ConnectionError 
 
 
 class Connection(object):
     def __init__(self, host='localhost', port=6379, weak_event_handler=None,
-                 stop_after=None, io_loop=None):
+                 stop_after=None, io_loop=None, max_buffer_size=104857600):
+        self.max_buffer_size = max_buffer_size
         self.host = host
         self.port = port
         if weak_event_handler:
@@ -69,7 +70,9 @@ class Connection(object):
                 sock.setsockopt(socket.SOL_TCP, socket.TCP_NODELAY, 1)
                 sock.settimeout(self.timeout)
                 sock.connect((self.host, self.port))
-                self._stream = IOStream(sock, io_loop=self._io_loop)
+                self._stream = IOStream(sock,
+                                        io_loop=self._io_loop,
+                                        max_buffer_size=self.max_buffer_size)
                 self._stream.set_close_callback(self.on_stream_close)
             except socket.error, e:
                 raise ConnectionError(str(e))

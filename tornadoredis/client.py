@@ -186,7 +186,8 @@ class Client(object):
 #                 'password', 'selected_db', '_pipeline', '_weak')
 
     def __init__(self, host='localhost', port=6379, password=None,
-                 selected_db=None, io_loop=None, connection_pool=None):
+                 selected_db=None, io_loop=None, connection_pool=None, 
+                 max_buffer_size=104857600):
         self._io_loop = io_loop or IOLoop.instance()
         self._connection_pool = connection_pool
         self._weak = weakref.proxy(self)
@@ -194,9 +195,11 @@ class Client(object):
             connection = (connection_pool
                           .get_connection(event_handler_proxy=self._weak))
         else:
-            connection = Connection(host=host, port=port,
+            connection = Connection(host=host, 
+                                    port=port,
                                     weak_event_handler=self._weak,
-                                    io_loop=self._io_loop)
+                                    io_loop=self._io_loop, 
+                                    max_buffer_size=max_buffer_size)
         self.connection = connection
         self.subscribed = False
         self.password = password
